@@ -7,7 +7,12 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const mongoose = require('mongoose');
 
-const routesSignUp = require('./routes/registration');
+const routesSignUp = require('./routes/users');
+const routesViewAllUsers = require('./routes/users');
+const routesViewUserById = require('./routes/users');
+const routesViewUserByUsername = require('./routes/users');
+
+const routesDeleteUser = require('./routes/users');
 
 const db = process.env.DB;
 mongoose
@@ -25,7 +30,16 @@ app
     const server = express();
     server.use(bodyParser.urlencoded({ extended: true }));
     server.use(bodyParser.json());
+    //User Signup
     server.use('/v1', routesSignUp);
+    //Read Users
+    server.use('/v1', routesViewAllUsers);
+    server.use('/v1', routesViewUserById);
+    server.use('/v1', routesViewUserByUsername);
+
+    //Delete User
+    server.use('/v1', routesDeleteUser);
+
     server.get('/', (req, res) => {
       const Home = '/';
       return app.render(req, res, Home);
