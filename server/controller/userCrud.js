@@ -1,5 +1,4 @@
 const Person = require('../models/user');
-const { find, findByIdAndDelete } = require('../models/user');
 
 const viewAllUsers = async (req, res) => {
   try {
@@ -7,7 +6,7 @@ const viewAllUsers = async (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({
         status: false,
-        message: 'No user exists',
+        message: 'No user yet',
         data: null,
       });
     }
@@ -28,7 +27,7 @@ const viewAllUsers = async (req, res) => {
 };
 
 const viewByUsername = (req, res) => {
-  const username = req.body.username;
+  const { username } = req.params;
   Person.findOne({ username })
     .then((users) => {
       if (!user) {
@@ -42,29 +41,35 @@ const viewByUsername = (req, res) => {
 };
 
 const viewById = async (req, res) => {
-  const _id = req.body.id;
-  try {
-    let result = await Person.findById(_id);
-    result.length === 0 ? res.status(404).send('No user exists') : '';
+  const { id } = req.params;
 
+  try {
+    let result = await Person.findById(id);
+    if (result.length === 0) {
+      return res.status(404).json({
+        status: false,
+        message: 'No user found',
+        data: null,
+      });
+    }
     return res.status(200).json({
       status: true,
-      message: `{username} found successfully`,
+      message: `${id} found successfully`,
       data: result,
     });
   } catch (e) {
+    console.log('error here >>Cornered');
     res.status(500).json({
       status: false,
-      data: null,
       message: 'An error occurred',
     });
   }
 };
 
 const deleteUserById = async (req, res) => {
+  const { id } = req.body;
   try {
-    const { id } = req.body;
-    const result = await Person.findByIdAndDelete({ _id: id });
+    const result = await Person.findByIdAndDelete(id);
     if (!result) {
       return res.status(404).json({
         status: false,

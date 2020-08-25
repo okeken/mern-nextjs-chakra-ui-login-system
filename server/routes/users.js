@@ -7,11 +7,10 @@ const {
   deleteUserById,
 } = require('../controller/userCrud');
 
-router.post('/signup/user', userRegistration);
-router.get('/view/users', viewAllUsers);
-router.get('/view/users/:id', viewById);
-router.get('/view/users/:username', viewByUsername);
-
-router.delete('/view/users', deleteUserById);
+router.post('/signup', userRegistration);
+router.get('', viewAllUsers);
+router.get('/:id', viewById);
+router.get('/:username', viewByUsername);
+router.delete('/:id', deleteUserById);
 
 module.exports = router;

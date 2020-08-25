@@ -6,6 +6,12 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const mongoose = require('mongoose');
+require('./config/passport');
+
+//Press Release Routes
+const routesViewAllNews = require('./routes/news');
+const routesCreateNews = require('./routes/news');
+const routesDeletNewsById = require('./routes/news');
 
 const routesSignUp = require('./routes/users');
 const routesViewAllUsers = require('./routes/users');
@@ -30,15 +36,6 @@ app
     const server = express();
     server.use(bodyParser.urlencoded({ extended: true }));
     server.use(bodyParser.json());
-    //User Signup
-    server.use('/v1', routesSignUp);
-    //Read Users
-    server.use('/v1', routesViewAllUsers);
-    server.use('/v1', routesViewUserById);
-    server.use('/v1', routesViewUserByUsername);
-
-    //Delete User
-    server.use('/v1', routesDeleteUser);
 
     server.get('/', (req, res) => {
       const Home = '/';
@@ -52,6 +49,22 @@ app
     server.get('/b', (req, res) => {
       return app.render(req, res, '/b', req.query);
     });
+
+    //User Signup
+    server.use('/v1/users', routesSignUp);
+
+    //Read Users
+    server.use('/v1/users', routesViewAllUsers);
+    server.use('/v1/users', routesViewUserById);
+    server.use('/v1/users', routesViewUserByUsername);
+
+    //Delete User
+    server.use('/v1', routesDeleteUser);
+
+    //Press Release
+    server.use('/v1', routesViewAllNews);
+    server.use('/v1', routesCreateNews);
+    server.use('/v1', routesDeletNewsById);
 
     server.all('*', (req, res) => {
       return handle(req, res);
