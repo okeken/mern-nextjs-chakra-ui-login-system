@@ -14,11 +14,13 @@ const routesCreateNews = require('./routes/news');
 const routesDeletNewsById = require('./routes/news');
 
 const routesSignUp = require('./routes/users');
+const routesLoginIn = require('./routes/users');
 const routesViewAllUsers = require('./routes/users');
 const routesViewUserById = require('./routes/users');
 const routesViewUserByUsername = require('./routes/users');
 
 const routesDeleteUser = require('./routes/users');
+const routesDeleteAllUser = require('./routes/users');
 
 const db = process.env.DB;
 mongoose
@@ -51,6 +53,7 @@ app
     });
 
     //User Signup
+    server.use('/v1/users', routesLoginIn);
     server.use('/v1/users', routesSignUp);
 
     //Read Users
@@ -60,6 +63,7 @@ app
 
     //Delete User
     server.use('/v1', routesDeleteUser);
+    server.use('/v1', routesDeleteAllUser);
 
     //Press Release
     server.use('/v1', routesViewAllNews);

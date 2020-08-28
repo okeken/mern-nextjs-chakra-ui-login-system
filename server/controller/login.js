@@ -1,50 +1,37 @@
 const bcrypt = require('bcryptjs');
 const Person = require('../models/user');
-const saltRouds = 12;
 
-exports.userlogin = (req, res) => {
+exports.userLogin = (req, res) => {
   const { email, password } = req.body;
 
-  (() => {
-    !email || !password
-      ? res.status(400).json({
-          status: false,
-          message: 'All fields are required',
-        })
-      : '';
-  })();
+  try {
+    let result = Person.findOne({ email });
+    if (!result)
+      return res.status(404).json({
+        status: false,
+        message: 'User not found',
+      });
+    const passwordValid = bcrypt.compareSync(req.body.password, user.password);
 
-  Person.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return res.status(423).json({
-          status: false,
-          message: 'Account not found, check and try again',
-        });
-      }
-
-      //hash password
-      bcrypt.compare(password, user.password).then((valid) => {
-        if (!valid) {
-          return res
-            .status(403)
-            .send('Incorect password, kindly review details');
-        }
+    if (!passwordValid)
+      return res.status(401).json({
+        accessToken: null,
+        message: 'invalid password',
       });
 
-      //Generate token when logged in
-      const token = jwt.sign(
-        { _id: user._id, email: user.email, username: user.username },
-        process.env.jwtSecret,
-        { expiresIn: '24hrs' }
-      );
+    const token = jwt.sign({ id: user.id }, process.env.jwTSecret, {
+      expiresIn: 86400,
+    });
 
-      res.status(200).send({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        token,
-      });
-    })
-    .catch((e) => console.log(e));
+    res.status(200).send({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      roles: authorities,
+      accessToken: token,
+    });
+  } catch (e) {
+    res.status(500).json('Server Error');
+    console.log('An error occurred', e);
+  }
 };

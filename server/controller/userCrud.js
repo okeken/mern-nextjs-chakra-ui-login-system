@@ -2,6 +2,7 @@ const Person = require('../models/user');
 
 const viewAllUsers = async (req, res) => {
   try {
+    console.log('env test', process.env.jwTSecret);
     const result = await Person.find({});
     if (result.length === 0) {
       return res.status(404).json({
@@ -87,9 +88,30 @@ const deleteUserById = async (req, res) => {
     });
   }
 };
+const deleteUsers = async (req, res) => {
+  try {
+    const result = await Person.deleteMany();
+    if (!result) {
+      return res.status(404).json({
+        status: false,
+        message: 'User not found',
+      });
+    }
+    return res.status(200).json({
+      status: true,
+      message: 'all records successfully deleted',
+    });
+  } catch (e) {
+    return res.status(500).json({
+      status: false,
+      message: 'Something happenend, try again later',
+    });
+  }
+};
 module.exports = {
   viewById,
   viewByUsername,
   viewAllUsers,
   deleteUserById,
+  deleteUsers,
 };
