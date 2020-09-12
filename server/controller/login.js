@@ -28,7 +28,7 @@ exports.userLogin = (req, res) => {
       username: user.username,
       email: user.email,
       roles: authorities,
-      accessToken: token,
+      token: token,
     });
   } catch (e) {
     res.status(500).json('Server Error');

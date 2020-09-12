@@ -2,7 +2,6 @@ const Person = require('../models/user');
 
 const viewAllUsers = async (req, res) => {
   try {
-    console.log('env test', process.env.jwTSecret);
     const result = await Person.find({});
     if (result.length === 0) {
       return res.status(404).json({

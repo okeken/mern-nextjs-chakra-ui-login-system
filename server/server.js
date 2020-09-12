@@ -13,7 +13,13 @@ const routesViewAllNews = require('./routes/news');
 const routesCreateNews = require('./routes/news');
 const routesDeletNewsById = require('./routes/news');
 
+const routesMakeStaff = require('./routes/admin');
+const routesMakeAdmin = require('./routes/admin');
+
 const routesSignUp = require('./routes/users');
+const routesSignUpMedia = require('./routes/users');
+
+///const routesSignUpAdminSuper = require('./routes/users');
 const routesLoginIn = require('./routes/users');
 const routesViewAllUsers = require('./routes/users');
 const routesViewUserById = require('./routes/users');
@@ -55,6 +61,12 @@ app
     //User Signup
     server.use('/v1/users', routesLoginIn);
     server.use('/v1/users', routesSignUp);
+    server.use('/v1/users', routesSignUpMedia);
+    //  server.use('/v1/users', routesSignUpAdminSuper);
+
+    //Promote User
+    server.use('/v1/users', routesMakeStaff);
+    server.use('/v1/users', routesMakeAdmin);
 
     //Read Users
     server.use('/v1/users', routesViewAllUsers);

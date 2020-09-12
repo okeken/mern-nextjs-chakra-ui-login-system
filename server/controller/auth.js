@@ -38,6 +38,7 @@ const userSignUp = (req, res) => {
         username,
         email,
         password,
+        role: 'user',
       });
       return newUser.save();
     })
@@ -45,6 +46,54 @@ const userSignUp = (req, res) => {
       res.status(200).json({
         status: true,
         message: 'Registration succeessful, login to proceed',
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+const journalistSignUp = (req, res) => {
+  const { username, email, password } = req.body;
+
+  (() => {
+    !email || !username || !password
+      ? res.status(400).json({
+          status: false,
+          message: 'All fields are required',
+        })
+      : '';
+  })();
+
+  Person.findOne({ username }).then((user) => {
+    if (user) {
+      return res.status(423).json({
+        status: false,
+        message: 'username taken, choose another one',
+      });
+    }
+  });
+  Person.findOne({ email }).then((user) => {
+    if (user) {
+      return res.status(423).send({
+        status: false,
+        message: 'User already exist',
+      });
+    }
+  });
+  bcrypt
+    .hash(password, saltRouds)
+    .then((password) => {
+      let newUser = new Person({
+        username,
+        email,
+        password,
+        role: 'journalist',
+      });
+      return newUser.save();
+    })
+    .then(() => {
+      res.status(200).json({
+        status: true,
+        message: 'Registration successful, login to proceed',
       });
     })
     .catch((err) => console.log(err));
@@ -60,7 +109,7 @@ const userLogin = (req, res) => {
       if (err)
         return res.status(500).json({
           status: false,
-          message: `An error occured, wit the description: ${err}`,
+          message: `An error occured, with the description: ${err}`,
         });
 
       const passwordIsValid = bcrypt.compareSync(
@@ -83,6 +132,7 @@ const userLogin = (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
         accessToken: token,
       });
     });
@@ -97,7 +147,42 @@ const userLogin = (req, res) => {
   }
 };
 
+// const adminSuper = async (req, res) => {
+//   const { email, username, password, role } = req.body;
+//   try {
+//     Person.findOne({ email }).then((user) => {
+//       if (user) {
+//         return res.status(423).send({
+//           status: false,
+//           message: 'User already exist',
+//         });
+//       }
+//     });
+//     bcrypt
+//       .hash(password, saltRouds)
+//       .then((password) => {
+//         let newUser = new Person({
+//           username,
+//           email,
+//           password,
+//           role: req.body.role,
+//         });
+//         return newUser.save();
+//       })
+//       .then(() => {
+//         res.status(200).json({
+//           status: true,
+//           message: 'Registration succeessful, login to proceed',
+//         });
+//       })
+//       .catch((err) => console.log(err));
+//   } catch (e) {
+//     return res.status(500).send('Server Error');
+//   }
+// };
 module.exports = {
   userSignUp,
+  journalistSignUp,
   userLogin,
+  //adminSuper,
 };
